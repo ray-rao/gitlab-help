@@ -216,7 +216,7 @@ services:
     restart: always
 ```
 
-#####  nexus 增加docker私人仓库和构建maven仓库
+#####  nexus 增加docker私人仓库和构建docker打包的maven镜像
 
 ```
 1. 去nexus添加docker类型的仓库
@@ -346,4 +346,3 @@ docker push 192.168.1.136:8082/mydocker/jskj-maven
 gitlab 变量在项目组下的 CI/CD 项配置
 git 文件权限：chown -R polkitd:ssh_keys xxx
 ```
-
