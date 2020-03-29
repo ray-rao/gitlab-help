@@ -216,6 +216,128 @@ services:
     restart: always
 ```
 
+#####  nexus 增加docker私人仓库和构建maven仓库
+
+```
+1. 去nexus添加docker类型的仓库
+2. 上传settings.xml到服务器
+3. touch Dockerfile
+4. touch build.sh
+```
+
+###### settings.xml
+
+```xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <localRepository>/usr/share/maven/ref/repository</localRepository>
+
+    <pluginGroups>
+
+    </pluginGroups>
+
+    <proxies>
+    </proxies>
+
+    <servers>
+        <server>
+            <id>jskj-releases</id>
+            <username>admin</username>
+            <password>jskj@123</password>
+        </server>
+        <server>
+            <id>jskj-snapshots</id>
+            <username>admin</username>
+            <password>jskj@123</password>
+        </server>
+        <server>
+            <id>jskj-public</id>
+            <username>admin</username>
+            <password>jskj@123</password>
+        </server>
+        <server>
+            <id>registry.jskj.com</id>
+            <username>admin</username>
+            <password>jskj@123</password>
+        </server>
+
+    </servers>
+
+    <mirrors>
+
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>test-profile</id>
+            <repositories>
+                <repository>
+                    <id>jskj-releases</id>
+                    <url>http://192.168.1.136:8081/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>jskj-snapshots</id>
+                    <url>http://192.168.1.136:8081/repository/maven-public/</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>jskj-public</id>
+                    <url>http://192.168.1.136:8081/repository/maven-public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>test-profile</activeProfile>
+    </activeProfiles>
+</settings>
+
+```
+
+###### Dockerfile
+
+```
+FROM maven:3.6.1-jdk-8
+
+COPY settings.xml /usr/share/maven/ref/
+CMD ["mvn"]
+```
+
+
+
+###### build.sh
+```
+#!/bin/bash
+
+docker build --tag jskj/jskj-maven:3.6.1-jdk-8 .
+docker tag jskj/jskj-maven:3.6.1-jdk-8 192.168.1.136:8082/mydocker/jskj-maven:latest
+docker push 192.168.1.136:8082/mydocker/jskj-maven
+```
+
+
+
 
 
 ##### 补充
